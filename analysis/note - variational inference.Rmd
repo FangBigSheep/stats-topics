@@ -1,0 +1,109 @@
+---
+title: "Variational inference - note"
+author: "Zhengyang Fang"
+date: "May 8, 2019"
+output: html_document
+---
+
+Reference: *David M. Blei et. al., Variational inference: a review for statisticians.*
+
+# Introduction
+
+### Formulate
+
+Approximate the posterior probability $p(\textbf z|\textbf x)$ with density family $\mathscr L$. Formally, solve
+$$
+q^*(\textbf z)=\arg\min_{q(\textbf z)\in\mathscr L}KL(q(\textbf z)||p(\textbf z|\textbf x)).
+$$
+
+### Compared with `MCMC`
+
+Variational inference is not as accurate, but much faster.
+
+Normally use variational inference on large data set.
+
+
+### Examples: Bayesian mixture of Gaussian
+
+$$
+p(\textbf z|\textbf x)=\frac{p(\textbf z,\textbf x)}{p(\textbf x)}.
+$$
+where
+$$
+p(\textbf x)=\int p(\textbf z,\textbf x)d\textbf z.
+$$
+
+The full hierarchical model
+
+$$
+\mu_k\sim N(0,\sigma^2),~c_i\sim Categorical(1/K,\dots,1/K),~x_i|c_i,\boldsymbol\mu\sim N(c_i^T\boldsymbol\mu,1).
+$$
+
+Then the joint density of all variables is
+
+$$
+p(\boldsymbol\mu,\textbf c,\textbf x)=p(\boldsymbol \mu)\prod_{i=1}^np(c_i)p(x_i|c_i,\boldsymbol\mu).
+$$
+
+Hence the evidence is 
+
+$$
+p(\textbf x)=\int p(\boldsymbol\mu)\prod_{i=1}^n\sum_{c_i}p(c_i)p(x_i|c_i,\boldsymbol\mu)d\boldsymbol\mu.
+$$
+This is intractable.
+
+### ELBO (evidence lower bound)
+
+Recall that (all the following expectations are w.r.t $q(\textbf z)$).
+$$
+KL(q(\textbf z)||p(\textbf z|\textbf x))=\mathbb E(\log q(\textbf z))-\mathbb E(\log p(\textbf z,\textbf x))+\log p(\textbf x).
+$$
+
+**[Define _ELBO_] **
+Optimize an alternative object that is equivalent to `KL-divergence` up to an added constant.
+$$
+ELBO(q):=\mathbb E(\log p(\textbf z, \textbf x))-\mathbb E(\log q(\textbf z)).
+$$
+
+Then we find that
+$$
+ELBO(q)=\mathbb E(\log p(\textbf z))+\mathbb E(\log p(\textbf x|\textbf z))-\mathbb E(\log q(\textbf z))=\mathbb E(\log p(\textbf x| \textbf z))-KL(q(\textbf z)||p(\textbf z)).
+$$
+
+So 
+$$
+\log p(\textbf x)=KL(q(\textbf z)||p(\textbf z|\textbf x))+ELBO(q).
+$$
+
+
+### Coordinate ascent mean-field variantional inference
+
+#### The algorithm - `CAVI`
+
+***
+
+**Input**: model $p(\textbf x,\textbf z)$, data set $\textbf x$.
+
+**Output**: A variational density $q(\textbf z)=\prod_{j=1}^mq_j(z_j)$.
+
+**while** the `ELBO` has not converged **do**
+    
+*   **for** $j\in\{1,\dots,m\}$ **do**
+        
+    + Set $q_j(z_j)\propto \exp\{\mathbb E_{-j}\log p(z_j|z_{-j},\textbf x)\}$
+        
+*   **end**
+    
+*    Compute `ELBO(q)`=$\mathbb E(\log p(\textbf z,\textbf x))-\mathbb E(\log q(\textbf z))$
+    
+**end**
+
+**return** $q(\textbf z)$.
+
+***
+
+Converge to local optimum.
+
+
+
+

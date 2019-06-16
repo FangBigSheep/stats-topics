@@ -1,0 +1,109 @@
+---
+title: "Multiple_testing_note"
+author: "Zhengyang Fang"
+date: "April 12, 2019"
+output:
+  slidy_presentation: default
+---
+
+# General theory
+
+## Common concerns about validity of data analysis
+
+1. question asked $\neq$ data measured / analysis performed
+
+2. confounding variables
+
+3. Analysis assumes a model that is false
+
+4. The data is used to guide choices made in the analysis
+
+5. Multiple comparisons
+
+## Different types of questions
+
+1. Binary - hypothesis testing
+
+    + Test if *X* is associated with *Y*.
+    + Multiple testing issues: are $X,Y$ fixed in advance? Transforming *X* or *Y*?
+
+2. Parameter estimation 
+
+    + Choice of model (similar issues in 1)  
+    + Assuming a false model
+
+3. Prediction
+
+    + If model / other choices are data-dependent, may encounter over-fitting issues.
+
+4. Situations where we aren't targeting a single number
+
+    + e.g. Clustering (can often overfit)
+
+
+# Topic I. Hypothesis testings
+
+* Assuming: 
+
+    + Null hypothesis is fixed (not data dependent)
+    + Can compute valid p-values for testing each null, and the function mapping to p-value is fixed in advance.
+
+* Formulation of `Multiple testing` problem: 
+
+    + There are a list of null hypothesis $H_{o1},H_{o2},\dots,H_{on}$, and the p-values for each hypothesis are $p_1,p_2,\dots,p_n$.
+
+    + A `Testing procedure` is a function mapping $\{p_1,\dots,p_n\}$ to a subset of $\{1,2,\dots,n\}$ (discoveries/rejections).
+
+* Possible goals to control `false positives`:
+
+    1. FamilyWise Error Rate (FWER): Bound $\mathbb P$(any false discoveries)
+
+    2. Bound $\mathbb P$(more than ... % false discoveries)
+
+    3. Bound $\mathbb P$(# false discoveries)
+
+    4. Bound $\mathbb P$(proportion of false discoveries(FDP) )
+
+    5. Bound $\mathbb P$(false discoveries rate (FDR) )
+
+1, 4, 5 are more common (they have abbreviation!)
+
+***
+
+## Sub-question 1. Global null hypothesis
+
+* Goal: test $H_{o,global}=$ all n nulls are true $(=\bigcap_{i=1,2,\dots,n}H_{oi})$.
+
+    + Notice: if $H_{o,global}$ is true, then every $P_i\sim unif(0,1)$ (but may not be independent)
+
+
+#### Method 1. Bonferroni correction
+
+Statistic $= \min\{p_1,p_2,\dots,p_n\}.$
+
+Reject if $\min_i \{p_i\}\leq c$, where $c = \frac \alpha n$, $\alpha$ is the level of test.
+
+> Proof (upperbound of type_I error): $\mathbb P(\min_i p_i\leq c)\leq \sum_i\mathbb P(p_i\leq c)=nc$, using the property $\mathbb P(A\cup B)\leq \mathbb P(A)+\mathbb P(B)$.
+
+*Very conservative*: the bound in the proof is hard to reach.
+
+
+#### Method 2. Fisher's test
+
+Statistic 
+$$F = -2\sum_i \log(p_i).$$
+
+Under $H_o,global$, $p_i\sim unif (0,1)$, if *additionally* $p_i$'s *are independent*, then $F\sim \chi_{2n}^2$.
+
+Reject if $F\geq (1-\alpha)$ -quantile of $\chi^2_{2n}$.
+
+#### 3. Simes test:
+
+* Reject $H_{o,global}$ if:
+
+    + At least 1 $p_i\leq\frac\alpha n$
+    + and/or at least 2 $p_i\leq\frac{2\alpha} n$
+    + $\vdots$
+    + and/or at least n $p_i\leq\frac{n\alpha} n$
+
+* __Theorem__: Under $H_{o,global}$, if $p_i$'s are independent. Then $\mathbb P$(Simes rejects at level $\alpha$)$=\alpha$.

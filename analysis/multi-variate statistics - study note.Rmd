@@ -1,0 +1,7 @@
+---
+title: "Multi-variate Statistics - study note"
+author: "Zhengyang Fang"
+date: "May 21, 2019"
+output: html_document
+---
+

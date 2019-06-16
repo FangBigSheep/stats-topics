@@ -1,0 +1,90 @@
+---
+title: "凸优化-学习笔记"
+author: "房正阳"
+date: "April 1, 2019"
+output: workflowr::wflow_html
+---
+
+
+# 基本概念
+
+> 优化问题
+
+$$
+\begin{aligned}
+&\min f_0(x)\\
+&s.t. f_i(x)\leq b_i,i=1,\dots,m.
+\end{aligned}
+$$
+
+优化变量x，目标函数$f_0$，约束函数$f_i$，约束边界$b_i$，最优解$x^\star$。
+
+> 凸优化:
+
+目标函数$f_0$和约束函数$f_i$都是凸函数，i.e.
+$$
+\forall\alpha\geq 0,\beta \geq 0 ,\alpha+\beta=1,f_i(\alpha x+\beta y)\leq \alpha f_i(x)+\beta f_i(y).
+$$
+
+# 理论
+
+### 相关名词
+
+`凸集`：集合中任意两点间的线段仍在该集合中。
+
+`凸组合`：$\sum_{i=1}^k\theta_ix_i,\theta_i\geq 0,\sum_{i=1}^k\theta_i=1$. (可以拓展到无穷级数、积分或其他大多数形式的概率分布)。
+
+`凸包`：(**conv** C) 集合 C 中所有点的凸组合的集合。
+
+`锥`：$x\in C, \theta\geq 0\Rightarrow \theta x\in C$.
+
+`凸锥`：$x_1,x_2\in C, \theta_1,\theta_2\geq 0\Rightarrow \theta_1 x_1+\theta_2 x_2\in C$.
+
+`锥组合`：非负线性组合。
+
+`锥包`：所有锥组合的集合。
+
+### 重要的例子
+
+`超平面`：$\{x~|~a^Tx=b\}$.
+
+`半空间`：$\{x~|~a^Tx\leq b\}$.
+
+`椭球`：$\{x~|~(x-x_c)^TP^{-1}(x-x_c)\leq 1\},~P\succ0$. 中心为 $x_c$。$P=r^2I$ 时为球。
+
+`多面体`：有限个半空间和超平面的交集。
+
+`单纯形`：（k 维）仿射独立的 $(k+1)$ 个点的凸包。单位单纯形：$\{0,e_1,\dots,e_n\}$决定的 $n$ 维单纯形。概率单纯形：$\{e_1,\dots,e_n\}$决定的 $(n-1)$ 维单纯形。
+
+`半正定矩阵（锥）`：$\textbf{S}^n_+$.
+
+`正定矩阵`：$\textbf{S}^n_{++}$.
+
+### 保凸运算
+
+`交集`，`仿射函数`，`分式线性变换` $f=\frac{Ax+b}{c^Tx+d}=P\circ g$, where $g(x)=\begin{bmatrix}A \\ c^T\end{bmatrix}x+\begin{bmatrix}b \\ d\end{bmatrix}$ and $P(z,t)=z/t$.
+
+
+### 性质
+
+> 广义不等式
+正常锥 K（凸、闭、实、尖）。偏序关系 $x\preceq_K y \Leftrightarrow x-y\in K$。
+
+> 超平面分离定理：两不交凸集存在分离超平面。
+
+> 支撑超平面定理：凸集边界一点存在支撑超平面。
+
+# 凸优化问题
+
+$$
+\begin{aligned}
+&\min_x f_0(x)\\
+&s.t. f_i(x)\leq 0,~h_j(x)=0.
+\end{aligned}
+$$
+目标函数 $f_0(x)$ 凸，不等式约束函数 $f_i(x)$ 凸，等式约束 $h_j(x)=a_j^Tx-b_j$ 必须仿射。易见凸问题的可行集是凸的。
+
+## 任意局部最优解是全局最优解
+
+
+
