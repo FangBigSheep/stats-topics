@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Zhengyang Fang" />
+
+
+<title>Variational inference - note</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Variational inference - note</h1>
+<h4 class="author">Zhengyang Fang</h4>
+<h4 class="date">May 8, 2019</h4>
+
+</div>
+
+
+<p>Reference: <em>David M. Blei et. al., Variational inference: a review for statisticians.</em></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<div id="formulate" class="section level3">
+<h3>Formulate</h3>
+<p>Approximate the posterior probability <span class="math inline">\(p(\textbf z|\textbf x)\)</span> with density family <span class="math inline">\(\mathscr L\)</span>. Formally, solve <span class="math display">\[
+q^*(\textbf z)=\arg\min_{q(\textbf z)\in\mathscr L}KL(q(\textbf z)||p(\textbf z|\textbf x)).
+\]</span></p>
+</div>
+<div id="compared-with-mcmc" class="section level3">
+<h3>Compared with <code>MCMC</code></h3>
+<p>Variational inference is not as accurate, but much faster.</p>
+<p>Normally use variational inference on large data set.</p>
+</div>
+<div id="examples-bayesian-mixture-of-gaussian" class="section level3">
+<h3>Examples: Bayesian mixture of Gaussian</h3>
+<p><span class="math display">\[
+p(\textbf z|\textbf x)=\frac{p(\textbf z,\textbf x)}{p(\textbf x)}.
+\]</span> where <span class="math display">\[
+p(\textbf x)=\int p(\textbf z,\textbf x)d\textbf z.
+\]</span></p>
+<p>The full hierarchical model</p>
+<p><span class="math display">\[
+\mu_k\sim N(0,\sigma^2),~c_i\sim Categorical(1/K,\dots,1/K),~x_i|c_i,\boldsymbol\mu\sim N(c_i^T\boldsymbol\mu,1).
+\]</span></p>
+<p>Then the joint density of all variables is</p>
+<p><span class="math display">\[
+p(\boldsymbol\mu,\textbf c,\textbf x)=p(\boldsymbol \mu)\prod_{i=1}^np(c_i)p(x_i|c_i,\boldsymbol\mu).
+\]</span></p>
+<p>Hence the evidence is</p>
+<p><span class="math display">\[
+p(\textbf x)=\int p(\boldsymbol\mu)\prod_{i=1}^n\sum_{c_i}p(c_i)p(x_i|c_i,\boldsymbol\mu)d\boldsymbol\mu.
+\]</span> This is intractable.</p>
+</div>
+<div id="elbo-evidence-lower-bound" class="section level3">
+<h3>ELBO (evidence lower bound)</h3>
+<p>Recall that (all the following expectations are w.r.t <span class="math inline">\(q(\textbf z)\)</span>). <span class="math display">\[
+KL(q(\textbf z)||p(\textbf z|\textbf x))=\mathbb E(\log q(\textbf z))-\mathbb E(\log p(\textbf z,\textbf x))+\log p(\textbf x).
+\]</span></p>
+<p><strong>[Define <em>ELBO</em>] </strong> Optimize an alternative object that is equivalent to <code>KL-divergence</code> up to an added constant. <span class="math display">\[
+ELBO(q):=\mathbb E(\log p(\textbf z, \textbf x))-\mathbb E(\log q(\textbf z)).
+\]</span></p>
+<p>Then we find that <span class="math display">\[
+ELBO(q)=\mathbb E(\log p(\textbf z))+\mathbb E(\log p(\textbf x|\textbf z))-\mathbb E(\log q(\textbf z))=\mathbb E(\log p(\textbf x| \textbf z))-KL(q(\textbf z)||p(\textbf z)).
+\]</span></p>
+<p>So <span class="math display">\[
+\log p(\textbf x)=KL(q(\textbf z)||p(\textbf z|\textbf x))+ELBO(q).
+\]</span></p>
+</div>
+<div id="coordinate-ascent-mean-field-variantional-inference" class="section level3">
+<h3>Coordinate ascent mean-field variantional inference</h3>
+<div id="the-algorithm---cavi" class="section level4">
+<h4>The algorithm - <code>CAVI</code></h4>
+<hr />
+<p><strong>Input</strong>: model <span class="math inline">\(p(\textbf x,\textbf z)\)</span>, data set <span class="math inline">\(\textbf x\)</span>.</p>
+<p><strong>Output</strong>: A variational density <span class="math inline">\(q(\textbf z)=\prod_{j=1}^mq_j(z_j)\)</span>.</p>
+<p><strong>while</strong> the <code>ELBO</code> has not converged <strong>do</strong></p>
+<ul>
+<li><p><strong>for</strong> <span class="math inline">\(j\in\{1,\dots,m\}\)</span> <strong>do</strong></p>
+<ul>
+<li>Set <span class="math inline">\(q_j(z_j)\propto \exp\{\mathbb E_{-j}\log p(z_j|z_{-j},\textbf x)\}\)</span></li>
+</ul></li>
+<li><p><strong>end</strong></p></li>
+<li><p>Compute <code>ELBO(q)</code>=<span class="math inline">\(\mathbb E(\log p(\textbf z,\textbf x))-\mathbb E(\log q(\textbf z))\)</span></p></li>
+</ul>
+<p><strong>end</strong></p>
+<p><strong>return</strong> <span class="math inline">\(q(\textbf z)\)</span>.</p>
+<hr />
+<p>Converge to local optimum.</p>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
