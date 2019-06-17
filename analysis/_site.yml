@@ -1,7 +1,7 @@
-name: "stats topics"
-output_dir: ../docs
+name: stats topics
+output_dir: ../public
 navbar:
-  title: "stats topics"
+  title: stats topics
   left:
   - text: Home
     href: index.html
@@ -9,6 +9,10 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fa-gitlab
+    text: Source code
+    href: https://gitlab.com/FangBigSheep/stats-topics
 output:
   workflowr::wflow_html:
     toc: yes
