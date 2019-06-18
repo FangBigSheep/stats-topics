@@ -1,0 +1,22 @@
+---
+title: "MDS"
+author: "Zhengyang Fang"
+date: "June 18, 2019"
+output: html_document
+---
+
+# Multiple dimensional scaling
+
+Reference: [Cox and cox, 2001](https://link.springer.com/chapter/10.1007/978-3-540-33037-0_14)
+
+#### Motivation
+
+Dimensional reduction to **preserve the pairwise distance**. We assume the data are from a low-dimensional embedding in the high-dimensional space.
+
+#### Settings
+
+Given the distance matrix $\textbf D\in\mathbb R^{N\times N}$, where $N$ is the number of data, the element $\textbf D_{ij}$ is the distance from sample $\textbf x_i$ to $\textbf x_j$.
+
+Assume the dimension of the origin space is $d$, i.e. $\textbf x_i\in\mathbb R^d$. Our goal is to reduce the dimension to $d^{\prime}$, where $d^{\prime}<d$. We assume the coordinates of the data in the new space $\mathbb R^{d^{\prime}}$ to be $\textbf Z$, and $\textbf Z\in \mathbb R^{N\times d^\prime}$
+
+
