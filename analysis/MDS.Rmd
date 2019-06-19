@@ -9,14 +9,126 @@ output: html_document
 
 Reference: [Cox and cox, 2001](https://link.springer.com/chapter/10.1007/978-3-540-33037-0_14)
 
-#### Motivation
+### Motivation
 
-Dimensional reduction to **preserve the pairwise distance**. We assume the data are from a low-dimensional embedding in the high-dimensional space.
+Dimensional reduction to **preserve the pairwise distance**, or equivalently, to **preserve the inner-product matrix** for centered data. We assume the data are from a low-dimensional embedding in the high-dimensional space.
 
-#### Settings
+### Settings and derivation
 
-Given the distance matrix $\textbf D\in\mathbb R^{N\times N}$, where $N$ is the number of data, the element $\textbf D_{ij}$ is the distance from sample $\textbf x_i$ to $\textbf x_j$.
+Given the distance matrix $\textbf D\in\mathbb R^{N\times N}$, where $N$ is the number of data, the element $\textbf D_{ij}$ is the distance from observation $\textbf x_i$ to $\textbf x_j$.
 
-Assume the dimension of the origin space is $d$, i.e. $\textbf x_i\in\mathbb R^d$. Our goal is to reduce the dimension to $d^{\prime}$, where $d^{\prime}<d$. We assume the coordinates of the data in the new space $\mathbb R^{d^{\prime}}$ to be $\textbf Z$, and $\textbf Z\in \mathbb R^{N\times d^\prime}$
+Assume the dimension of the observation is $d$, i.e. $\textbf x_i\in\mathbb R^d$. Our goal is to reduce the dimension to $d^{\prime}$, where $d^{\prime}<d$. We assume the coordinates of the data in the low-dimensional space $\mathbb R^{d^{\prime}}$ to be $\textbf Z$, and $\textbf Z\in \mathbb R^{N\times d^\prime}$. Then (the transpose of) the i-th row of $\textbf Z$, $\textbf z_i$, will be the new coordinate of sample $\textbf x_i$. Without losing generality, we can assume the new coordinates are centered at the origin, i.e. $\textbf Z$ is column-centered.
+
+Let the inner-product matrix $\textbf B=\textbf Z\textbf Z^T\in \mathbb R^{N\times N}$, then the pairwise distance in the low-dimensional space between $\textbf z_i$ and $\textbf z_j$
+
+$$
+dist_{ij}^2=\|\textbf z_i-\textbf z_j\|^2_2=\|\textbf z_i\|_2^2+\|\textbf z_j\|_2^2-2\textbf z_i^T \textbf z_j=\textbf B_{ii}+\textbf B_{jj}-2\textbf B_{ij}.
+$$
+
+Since $\textbf Z$ is column-centered, then we have
+
+$$
+\begin{aligned}
+\sum_{i=1}^Ndist_{ij}^2&=\sum_{i=1}^N\textbf B_{ii}+N\textbf B_{jj}-2\sum_{i=1}^N\textbf B_{ij}\\
+&=trace(\textbf B)+N\textbf B_{jj}-2\sum_{i=1}^N\textbf z_{i}^T\textbf z_j\\
+&=trace(\textbf B)+N\textbf B_{jj}-2\left(\sum_{i=1}^N\textbf z_{i}\right)^T\textbf z_j\\
+&=trace(\textbf B)+N\textbf B_{jj}.
+\end{aligned}
+$$
+
+Similarly
+
+$$
+\sum_{j=1}^Ndist_{ij}^2=trace(\textbf B)+N\textbf B_{ii}.
+$$
+
+And
+
+$$
+\sum_{i=1}^N\sum_{j=1}^Ndist_{ij}^2=\sum_{i=1}^N(trace(\textbf B)+N\textbf B_{ii})=2N\cdot trace(\textbf B).
+$$
+
+Let
+
+$$
+dist_{i\cdot}^2=\frac1N\sum_{j=1}^Ndist_{ij}^2,~dist_{\cdot j}^2=\frac1N\sum_{i=1}^Ndist_{ij}^2,~dist_{\cdot\cdot}^2=\frac1{N^2}\sum_{i=1}^N\sum_{j=1}^Ndist_{ij}^2.
+$$
+
+Hence, 
+
+$$
+\begin{aligned}
+\textbf B_{ij}&=\frac12\left(\textbf B_{ii}+\textbf B_{jj}-dist_{ij}^2\right)\\
+&=\frac12\left(dist_{i\cdot}^2-trace(\textbf B)+dist_{\cdot j}^2-trace(\textbf B)-dist_{ij}^2\right)\\
+&=-\frac12\left(dist_{\cdot\cdot}^2-dist_{i\cdot}^2-dist_{\cdot j}^2+dist_{ij}^2\right).
+\end{aligned}
+$$
+
+From the steps above we can see that, we can recover the inner-product matrix $\textbf B$ using only the distance matrix $\textbf D$. For any given distance matrix $\textbf D$, we can calculate $\textbf B$ as above. Our goal is to choose $\hat{\textbf Z}$ s.t. $\hat {\textbf B}=\hat{\textbf Z}\hat{\textbf Z}^T$ can approximate $\textbf B$.
+
+Since $\hat{\textbf Z}\in \mathbb R^{N\times d^{\prime}}$. We can see that the rank of $\hat{\textbf B}=\hat{\textbf Z}\hat{\textbf Z}^T$ is at most $d^\prime$. We can find the best rank-$d^\prime$ approximation with eigen decomposition. 
+
+### Algorithm
+
+* 1. For given distance matrix $\textbf D$, calculate the inner-product matrix $\textbf B$.
+
+* 2. Eigen decomposition: $\textbf B=\textbf V\boldsymbol\Lambda \textbf V^T$. The diagnal elements of $\boldsymbol\Lambda$ are in decreasing order. 
+
+* 3. Return the coordinates of data in low dimensional space $\hat{\textbf Z}=\tilde{\textbf V}\tilde{\boldsymbol \Lambda}^{1/2}$, where $\tilde{\textbf V}$ is the first $d^\prime$ columns of $\textbf V$, and $\tilde{\boldsymbol \Lambda}\in \mathbb R^{d^\prime\times d^\prime}$ is the upper-left $d^\prime\times d^\prime$ block of ${\boldsymbol \Lambda}$.
+
+
+### Fit measurement
+
+As we reduce the dimension of the data to $d^\prime$, a natural question is, how good is our $d^\prime$-dimensional approximation? `Stress` [(Kruskal 1964)](https://link.springer.com/article/10.1007/BF02289565) is one of the measurement. It measures the closeness between the original pairwise distance and the fitted pairwise distance. Let $d_{ij}$ denote the distance between observation $\textbf x_i$ and $\textbf x_i$, and $\hat d_{ij}$ denote their distance in the low-dimensional space. Then we define
+
+$$
+Stress = \sqrt{\frac{\sum_k\sum_{i<k}(d_{ik}-\hat d_{ik})^2}{\sum_k\sum_{i<k}d_{ik}^2}}.
+$$
+
+An alternative measurement is `SStress`
+
+$$
+SStress = \sqrt{\frac{\sum_k\sum_{i<k}(d_{ik}^2-\hat d_{ik}^2)^2}{\sum_k\sum_{i<k}d_{ik}^4}}.
+$$
+
+Normally $Stress<0.1$ or $SStress<0.1$ can imply a good fit.
+
+### Example
+
+```{r, message = F}
+set.seed(1)
+
+library(ggplot2)
+library(plotly)
+
+N <- 300  # number of observation
+p <- 3    # dimension of observation
+
+# generate data, a curve in R^3 space
+# with a 1-dimensional structure
+
+latent.var <- runif(N, max = 5)
+X <- matrix(0, nrow = N, ncol = p)
+X[, 1] <- latent.var * 2 + rnorm(100, sd = 0.01)
+X[, 2] <- latent.var * 3 + rnorm(100, sd = 0.01)
+X[, 3] <- latent.var ^ 2 + rnorm(100, sd = 0.01)
+
+# see the observation plot below
+plot_ly(x = X[, 1], y = X[, 2], z = X[, 3], 
+        type = "scatter3d", mode = "markers", color = latent.var)
+
+# calculate the distance matrix
+D <- dist(X)
+
+# run built-in function for MDS
+# reduce to R^2 space
+Z <- cmdscale(D, k = 2)
+
+ggplot(data = data.frame(z1 = Z[, 1], z2 = Z[, 2], x1 = X[, 1]), aes(x = z1, y = z2)) +
+    geom_point(aes(colour = latent.var)) + 
+    scale_colour_gradient(low = 'blue', high = 'yellow') +
+    ggtitle("MDS result") + xlab("Dimension 1") + ylab("Dimension 2")
+```
+
 
 
