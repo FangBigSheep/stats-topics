@@ -124,11 +124,19 @@ D <- dist(X)
 # reduce to R^2 space
 Z <- cmdscale(D, k = 2)
 
-ggplot(data = data.frame(z1 = Z[, 1], z2 = Z[, 2], x1 = X[, 1]), aes(x = z1, y = z2)) +
+ggplot(data = data.frame(z1 = Z[, 1], z2 = Z[, 2]), aes(x = z1, y = z2)) +
     geom_point(aes(colour = latent.var)) + 
     scale_colour_gradient(low = 'blue', high = 'yellow') +
     ggtitle("MDS result") + xlab("Dimension 1") + ylab("Dimension 2")
+
+# reduce to R^1 space
+Z <- cmdscale(D, k = 1)
+
+ggplot(data = data.frame(z1 = Z[, 1], z2 = rep(0, N)), aes(x = z1, y = z2)) +
+    geom_point(aes(colour = latent.var)) + 
+    scale_colour_gradient(low = 'blue', high = 'yellow') +
+    ggtitle("MDS result") + xlab("Dimension 1") + ylab("")
 ```
 
-
+We can see that, `MDS` successfully recovers the low-dimensional structure in the data.
 
