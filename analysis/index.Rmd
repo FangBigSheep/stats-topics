@@ -18,10 +18,6 @@ Explain interesting statistics topics with critical concept and examples. Hopefu
 
 * [Multiple dimensional scaling](MDS.html)
 
-#### II. Supervised learning
-
-* [Decision tree](decision_tree.html)
-
 ### Multiple testing
 
 * [Notes](Multiple_testing_note.html)
@@ -31,5 +27,10 @@ Explain interesting statistics topics with critical concept and examples. Hopefu
 
 
 ### Machine learnings
+
+#### I. Supervised learning
+
+* [Decision tree](decision_tree.html)
+
 
 ### Optimization
