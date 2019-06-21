@@ -10,7 +10,7 @@ editor_options:
 
 # Topics of statistics
 
-Explain interesting statistics topics with critical concept and examples. Hopefully they are easy to understand. If you have any questions or suggestions, please email me at [zyfang@uchicago.edu].
+Explain interesting statistics topics with critical concept and examples. Hopefully they can help with your studying and teaching. If you have any questions or suggestions, feel free to email me at [zyfang@uchicago.edu].
 
 ### Multivariate statistics
 
