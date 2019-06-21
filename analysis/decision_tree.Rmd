@@ -1,0 +1,48 @@
+---
+title: "Decision tree"
+author: "Zhengyang Fang"
+date: "June 21, 2019"
+output: html_document
+---
+
+# Decision tree
+
+A `decision tree` displays an algorithm that only contains conditional control statements.
+
+### Building the decision tree
+
+We use a divide-and-conquer algorithm to build a decision tree: we split a big node into a few sub-nodes, and then keep splitting those sub-nodes as above, until each of those contains only a class. 
+
+In splitting, the rule of thumb is, we split the big node in a way that maximizes the "purity" of those sub-nodes. That is to say, each sub-node contains more samples from only one class.
+
+`Information entropy` is a measurement of the "purity" of a set. Assume a set $D$ contains $N$ classes, and their proportions are $p_1,p_2,\dots,p_N$. The definition of `information entropy` is
+$$
+H(D)=-\sum_{k=1}^Np_k\log p_k.
+$$
+The smaller $H(D)$ is, the higher purity that set $D$ has.
+
+1. `ID3` algorithm [(Quinlan, 1986)](http://hunch.net/~coms-4771/quinlan.pdf)
+
+Among all possible splitting, choose the attribute $a$ that maximizes the `information gain`:
+$$
+Gain(D,a)=H(D)-\sum_{v=1}^V\frac{|D^v|}{|D|}H(D^v),
+$$
+
+where $V$ is the number of possible values of attribute $a$.
+
+It makes some sense, however, it is in favor of the attribute that splits the node into *more* sub-nodes. Specifically, if we include the idendity attribute in our feature, i.e. each sample has a unique indentity, then it will increase the `information entropy` to zero. Thus the indentity will always be the chosen one to split. But the generalization ability of this decision tree will be poor, which is not plausible.
+
+2. `C4.5` algorithm [(Quinlan, 1993)](https://link.springer.com/article/10.1007/BF00993309)
+
+To avoid splitting the node into fragiles,`C4.5` algorithm takes the number of sub-nodes into account. It maximizes `gain ratio` instead of `information gain`. The definition of `gain ratio`:
+$$
+GainRatio(D,a)=\frac{Gain(D,a)}{IV(a)},
+$$
+where $IV(a)$ is the `intrinsic value` of attribute $a$, defined by
+$$
+IV(a)=-\sum_{v=1}^V\frac{|D^v|}{|D|}\log \frac{|D^v|}{|D|}.
+$$
+
+A notable fact is that, by maximizing the `gain ratio`, it tends to choose attributes with *less* sub-nodes, exactly the opposite to `ID3` algorithm. $C4.5$ algorithm takes both of them into account: it maximizes the `gain ratio` only among those attributes with `information gain` above the average.
+
+
