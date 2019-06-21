@@ -9,9 +9,9 @@ output: html_document
 
 A `decision tree` displays an algorithm that only contains conditional control statements.
 
-### Building the decision tree
+## Building the decision tree
 
-We use a divide-and-conquer algorithm to build a decision tree: we split a big node into a few sub-nodes, and then keep splitting those sub-nodes as above, until each of those contains only a class. 
+We use a divide-and-conquer algorithm to build a decision tree: we split a big node into a few sub-nodes, and then keep splitting those sub-nodes as above, until each of them contains only one class. 
 
 In splitting, the rule of thumb is, we split the big node in a way that maximizes the "purity" of those sub-nodes. That is to say, each sub-node contains more samples from only one class.
 
@@ -45,4 +45,79 @@ $$
 
 A notable fact is that, by maximizing the `gain ratio`, it tends to choose attributes with *less* sub-nodes, exactly the opposite to `ID3` algorithm. $C4.5$ algorithm takes both of them into account: it maximizes the `gain ratio` only among those attributes with `information gain` above the average.
 
+3. `CART` (classification and regression trees, [Breiman et al., 1984](https://rafalab.github.io/pages/649/section-11.pdf))
+
+`CART` uses a new measurement of "purity": `Gini index`, defined as follows:
+$$
+Gini(D)=\sum_{k=1}^N\sum_{k^\prime\neq k}p_kp_k^\prime=1-\sum_{k=1}^Np_k^2.
+$$
+The notation is the same as above. For any attribute $a$, splitting by $a$ changes the `Gini index` to
+$$
+Gini(D,a)=\sum_{v=1}^V\frac{|D^v|}{|D|}Gini(D^v).
+$$
+
+`CART` maximizes $Gini(D,a)$ among all possible attributes $a$.
+
+
+## Pruning
+
+To prevent overfitting, we prune the decision tree for a better generalization performance.
+
+1. `Prepruning`
+
+When building the decision tree, we may stop early, not necessarily until each node contains only one class. For each splitting, we use cross-validation to test whether the current splitting increases the generalization performance. If not, we stop splitting the current node immediately.
+
+`Prepruning` can reduce the fitting complexity, but it risks ill-fitting. Some splittings themselves cannot improve generalization performance, but based on those, some further splittings may be very helpful. But `prepruning` totally ignores them.
+
+2. `Postpruning`
+
+After we expand all the nodes of a decision tree, we can prune it from the leaf nodes to the root.  We also use cross-validation to test whether the current splitting increases the generalization performance. In the comparison, we can take the "good future splitting" into account. Therefore, compared with `prepruning`, it is much less likely to get ill-fitted. However, since we have to expand all possible nodes at first, and then test all of them, the computation can be a burden.
+
+## Other issues
+
+### Continuous variable
+
+Continuous variable is more complicated here, because it may have infinite possible values. An easy solution is to sort all the training data by this variable $a$, suppose their values are $a_1<a_2<\dots<a_n$, and then treat it as $(n-1)$ possible bi-partition attributes: "whether $a>T_i?$", where $T_i=\frac12(a_i+a_{i+1}),1\leq i\leq n-1$.
+
+### Missing value
+
+Missing value on some attributes is a common issue, especially on clinical data set. Based on $C4.5$ algorithm, we expand the definition of `information gain` to solve this issue. The motivation here is, when we split a node with an attribute $a$, for those samples with missing value on $a$, **we let them appear in all sub-nodes, but with an estimated probability**.
+
+For set $D$, attribute $a$, let $\tilde D\in D$ denotes the subset of $D$ where attribute $a$ is not missing. We assign a weight $w_x$ to each sample $x$, initially $w_x=1$ for all $x$.
+
+Define the non-missing proportion
+$$
+\rho=\frac{\sum_{x\in \tilde D} w_x}{\sum_{x\in D}w_x},
+$$
+the proportion for the k-th class in the non-missing data
+$$
+\tilde p_k=\frac{\sum_{x\in \tilde D_k} w_x}{\sum_{x\in \tilde D}w_x},
+$$
+the proportion for taking value $a^v$ on attribute $a$
+$$
+\tilde r_v=\frac{\sum_{x\in \tilde D^v} w_x}{\sum_{x\in \tilde D}w_x}.
+$$
+Then the definition of `information gain` is generalized as
+$$
+Gain(D,a)=\rho\left(H(\tilde D)-\sum_{v=1}^V\tilde r_vH(\tilde D^v)\right),
+$$
+where $H(\tilde D)=-\sum_{k=1}^N\tilde p_k\log \tilde p_k$.
+
+For those samples with non-missing value on attribute $a$, we devide them into the corresponding nodes, and remain their weight $w_x$ constant. For those samples with missing value on attribute $a$, we devide them into **all** possible nodes, but setting their weights to be $\tilde r_vw_x$. This weight is exactly the estimated probability.
+
+## Example
+
+R-package for `CART` algorithm.
+
+```{r}
+library(rpart)
+library(rpart.plot)
+library(tree)
+
+data(kyphosis)
+set.seed(1)
+
+tree <- rpart(Kyphosis ~ . , kyphosis)
+rpart.plot(tree)
+```
 
