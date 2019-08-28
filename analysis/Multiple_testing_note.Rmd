@@ -1,80 +1,46 @@
 ---
-title: "Multiple_testing_note"
+title: "Multiple Testing"
 author: "Zhengyang Fang"
 date: "April 12, 2019"
-output:
-  slidy_presentation: default
 ---
-
-# General theory
-
-## Common concerns about validity of data analysis
-
-1. question asked $\neq$ data measured / analysis performed
-
-2. confounding variables
-
-3. Analysis assumes a model that is false
-
-4. The data is used to guide choices made in the analysis
-
-5. Multiple comparisons
-
-## Different types of questions
-
-1. Binary - hypothesis testing
-
-    + Test if *X* is associated with *Y*.
-    + Multiple testing issues: are $X,Y$ fixed in advance? Transforming *X* or *Y*?
-
-2. Parameter estimation 
-
-    + Choice of model (similar issues in 1)  
-    + Assuming a false model
-
-3. Prediction
-
-    + If model / other choices are data-dependent, may encounter over-fitting issues.
-
-4. Situations where we aren't targeting a single number
-
-    + e.g. Clustering (can often overfit)
-
 
 # Topic I. Hypothesis testings
 
-* Assuming: 
+## General idea
 
-    + Null hypothesis is fixed (not data dependent)
-    + Can compute valid p-values for testing each null, and the function mapping to p-value is fixed in advance.
+#### Assuming: 
 
-* Formulation of `Multiple testing` problem: 
+* Null hypothesis is fixed (not data dependent)
+* Can compute valid p-values for testing each null, and the function mapping to p-value is fixed in advance.
 
-    + There are a list of null hypothesis $H_{o1},H_{o2},\dots,H_{on}$, and the p-values for each hypothesis are $p_1,p_2,\dots,p_n$.
+#### Formulation of `Multiple testing` problem: 
 
-    + A `Testing procedure` is a function mapping $\{p_1,\dots,p_n\}$ to a subset of $\{1,2,\dots,n\}$ (discoveries/rejections).
+* There are a list of null hypothesis $H_{o1},H_{o2},\dots,H_{on}$, and the p-values for each hypothesis are $p_1,p_2,\dots,p_n$.
 
-* Possible goals to control `false positives`:
+* A `Testing procedure` is a function mapping $\{p_1,\dots,p_n\}$ to a subset of $\{1,2,\dots,n\}$ (discoveries/rejections).
 
-    1. FamilyWise Error Rate (FWER): Bound $\mathbb P$(any false discoveries)
+#### Possible goals to control `false positives`:
 
-    2. Bound $\mathbb P$(more than ... % false discoveries)
+1. FamilyWise Error Rate (FWER): Bound *Pr(Any false discoveries)*
 
-    3. Bound $\mathbb P$(# false discoveries)
+2. Bound *Pr(More than ...% false discoveries)*
 
-    4. Bound $\mathbb P$(proportion of false discoveries(FDP) )
+3. Bound *Pr(Number of false discoveries)*
 
-    5. Bound $\mathbb P$(false discoveries rate (FDR) )
+4. Bound *Pr(Proportion of false discoveries(FDP) )*
+
+5. Bound *Pr (False discoveries rate (FDR) )*
 
 1, 4, 5 are more common (they have abbreviation!)
 
 ***
 
-## Sub-question 1. Global null hypothesis
+
+## Question 1. Global null hypothesis
 
 * Goal: test $H_{o,global}=$ all n nulls are true $(=\bigcap_{i=1,2,\dots,n}H_{oi})$.
 
-    + Notice: if $H_{o,global}$ is true, then every $P_i\sim unif(0,1)$ (but may not be independent)
+Notice: if $H_{o,global}$ is true, then every $P_i\sim unif(0,1)$ (but may not be independent)
 
 
 #### Method 1. Bonferroni correction

@@ -1,5 +1,5 @@
 name: stats topics
-output_dir: ../public
+output_dir: ../docs
 navbar:
   title: stats topics
   left:
@@ -12,7 +12,7 @@ navbar:
   right:
   - icon: fa-gitlab
     text: Source code
-    href: https://gitlab.com/FangBigSheep/stats-topics
+    href: https://github.com/FangBigSheep/stats-topics
 output:
   workflowr::wflow_html:
     toc: yes
